@@ -1,0 +1,100 @@
+コードを確認しました。  
+**良い点**と**大きな問題点**がはっきり出ているので、順番に見ていきましょう。
+
+### 良い点
+- `while(1)` で入力を繰り返そうとしている意識は正しい。
+- `switch` を使おうとしているのもPhase 1の狙い通り。
+- 入力ミスに対応しようとしている姿勢が良い。
+
+### 大きな問題点（これが動いていない原因）
+
+#### 1. `scanf` の戻り値の使い方が間違っている
+```c
+choice = scanf("%d", &menu_num);
+```
+`scanf` は「入力に成功した個数」を返します。  
+`%d` が1つなので、成功すれば `1`、失敗すれば `0` が返ってきます。
+
+つまり `choice` には**ユーザーが入力した数字ではなく、1か0が入る**ことになります。
+
+#### 2. 判定対象が間違っている
+```c
+if (choice > 3 || choice < 1)
+```
+ここも `choice`（scanfの戻り値）を判定しています。  
+正しくは `menu_num`（実際に入力された値）を判定しなければなりません。
+
+#### 3. switch も `choice` を見ている
+ループを抜けた後も `switch (choice)` になっているので、  
+ほぼ確実に `case 1` しか実行されません。
+
+---
+
+### 修正したコード（まずこれが動く形）
+
+```c
+#include <stdio.h>
+
+int main(void) {
+    int menu_num;
+    int result;   // scanfの戻り値用
+
+    while (1) {
+        printf("Please enter a number between 1 and 3: ");
+        result = scanf("%d", &menu_num);
+
+        // 入力が数字じゃなかった場合
+        if (result != 1) {
+            printf("Invalid input. Please enter a number.\n");
+            // バッファに残ったゴミを捨てる
+            while (getchar() != '\n');
+            continue;
+        }
+
+        // 範囲チェック
+        if (menu_num < 1 || menu_num > 3) {
+            printf("Please enter a number between 1 and 3.\n");
+            continue;
+        }
+
+        // ここに来たら正しい入力
+        break;
+    }
+
+    switch (menu_num) {
+        case 1:
+            printf("Your choice is 1\n");
+            break;
+        case 2:
+            printf("Your choice is 2\n");
+            break;
+        case 3:
+            printf("Your choice is 3\n");
+            break;
+        default:
+            // ここには通常来ない
+            printf("Unexpected error\n");
+            break;
+    }
+
+    return 0;
+}
+```
+
+### ポイント解説
+| 項目 | 内容 |
+|------|------|
+| `result = scanf(...)` | 成功したかどうかを確認するために使う |
+| `result != 1` | 数字以外が入力された場合の処理 |
+| `while (getchar() != '\n');` | 入力バッファに残った文字を捨てる（これがないと無限ループになりやすい） |
+| `switch (menu_num)` | 実際に入力された値で分岐する |
+
+---
+
+### 次にやってほしいこと
+1. 上の修正版を自分で打ち直して動かす。
+2. わざと変な入力をしてみる（例：`a`、`4`、`-1`、`2.5` など）。
+3. それぞれの入力でどう動くか観察する。
+
+動いたら「修正版を動かした」と教えてください。  
+次は「入力ミス対応をもう少し丁寧にする」か「九九表のfor→while書き換え」に進みましょう。
