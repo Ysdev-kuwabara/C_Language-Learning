@@ -1,0 +1,65 @@
+確認しました。**完璧です。**
+
+- 構造体をポインタで渡せている
+- `->` でメンバーを正しく読み書きできている
+- 関数で値を変更した結果が呼び出し元に反映されている
+
+値渡しとポインタ渡しの違いも、これで体感できています。
+
+---
+
+### 第4段階：typedef で型に別名を付ける
+
+#### 説明
+
+毎回 `struct Student` と書くのは少し面倒です。  
+`typedef` を使うと、型に短い別名を付けられます。
+
+```c
+typedef struct {
+    int id;
+    char name[32];
+    double score;
+} Student;          // これで Student という型名が使える
+```
+
+または
+
+```c
+struct Student {
+    int id;
+    char name[32];
+    double score;
+};
+typedef struct Student Student;
+```
+
+これ以降は `Student s;` や `Student *p;` と書けるようになります。
+
+実務でもほぼ必ず使います。
+
+---
+
+### 実践問題3-4
+
+以下の仕様でプログラムを書いてください。
+
+1. `typedef` を使って `Student` 型を定義する
+2. 学生3人分の配列を作る
+3. 全員の情報を表示する関数を作る（ポインタ渡し）
+4. 平均点を計算して表示する関数を作る
+
+出力例：
+```
+ID: 1006, Name: Kawaguchi, Score: 85.5
+ID: 1007, Name: Seno, Score: 82.6
+ID: 1008, Name: Koshio, Score: 92.3
+平均点: 86.8
+```
+
+ポイント：
+- `typedef` を使う
+- 表示関数と平均計算関数を分ける
+- 平均は `double` で計算する
+
+コードができたら貼ってください。
